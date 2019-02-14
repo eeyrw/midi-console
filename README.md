@@ -1,6 +1,6 @@
-# empty-project-babel-css-react-react-hot-loader-lodash
+# A web browser based midi-console
 
-Empty project.
+A web browser based midi-console.
 
 ## Building and running on localhost
 
