@@ -16,18 +16,17 @@ class MainApp extends React.Component
   {
     const midiDeviceListElement=<MidiDeviceList/>
     const velocityChartElement=<VelocityChart/>
-   console.log(velocityChartElement)
     return(
       <Container>
       <Row>
         <h1>MIDI-CONSOLE</h1>
-        { velocityChartElement.getOption()}
+        
       </Row>
       <Row>
         {midiDeviceListElement}
       </Row>
       <Row>
-<VelocityChart/>
+{velocityChartElement}
       </Row>
     </Container>);
   }
