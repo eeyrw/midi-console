@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { hot } from 'react-hot-loader'
 import ReactEcharts from 'echarts-for-react';  // or var ReactEcharts = require('echarts-for-react');
 import { Col,Row,Container,Navbar, Jumbotron, Button } from 'react-bootstrap';
+import MidiDeviceList from './midiDeviceList';
 import 'bootstrap/dist/css/bootstrap.css';
 
 var mountNode = document.getElementById("app");
@@ -73,23 +74,23 @@ series: [
   }
 ]} //配置项
 
-class Akk extends React.Component
+class MainApp extends React.Component
 {
   render()
   {
     return(
       <Container>
       <Row>
-        <Col><h1>dsfsfsf</h1></Col>
-        <Col>2 of 2</Col>
+        <h1>MIDI-CONSOLE</h1>
       </Row>
       <Row>
-        <Col>1 of 3</Col>
-        <Col>2 of 3</Col>
-        <Col>3 of 3</Col>
+        <MidiDeviceList/>
+      </Row>
+      <Row>
+
       </Row>
     </Container>);
   }
 }
 
-ReactDOM.render( < Akk/>, mountNode);
+ReactDOM.render( < MainApp/>, mountNode);
