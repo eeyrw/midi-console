@@ -20,6 +20,23 @@ const CheckBoxArray=({checkBoxList})=>{
 CheckBoxArray.propTypes = {
   checkBoxList: PropTypes.array
   };
+
+class MidiDeviceManagement extends React.Component
+{
+  constructor(props) {
+    super(props)
+    }
+    onConnected(e)
+    {
+      
+    }
+    componentDidMount()
+    {
+      webmidi.addListener("connected",this.onConnected(e));
+    }
+
+}
+
 class MidiDeviceList extends React.Component
 {
   constructor(props) {
