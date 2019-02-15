@@ -2,26 +2,48 @@ import React from "react";
 import { Form,Col,Row,Container,Navbar, Jumbotron, Button } from 'react-bootstrap';
 import WebMidi from 'webmidi';
 import webmidi from "webmidi";
+import PropTypes from 'prop-types';
+import { runInThisContext } from "vm";
 
 
 
-
+const CheckBoxArray=({checkBoxList})=>{
+   return(checkBoxList.map(item=>(
+    <Form.Check 
+    disabled={item.disabled}
+    checked={item.checked}
+        type='checkbox'
+        id={item.id}
+        label={item.name}
+      />)))
+}
+CheckBoxArray.propTypes = {
+  checkBoxList: PropTypes.array
+  };
 class MidiDeviceList extends React.Component
 {
+  constructor(props) {
+    super(props)
+    this.state = {
+    ll: [{id:0,name:'dfgdgf',disabled:true,checked:true}]
+    }
+    }
+  componentDidMount()
+  {
+    this.setState({ll:new Array()});
+    this.timerID=setInterval(()=>{
+      this.state.ll.push({id:67,name:'dfdd',disabled:true,checked:true})
+    this.setState({ll:this.state.ll})
+    }
+    ,1000)
+  }
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
   render()
   {
-
-    var midiInDevCheckList=new Array();
-    for (let index = 0; index < 5; index++) {
-        
-      midiInDevCheckList.push(<Form.Check 
-        type='checkbox'
-        id={`default-checkbox`}
-        label={`default checkbox`}
-      />);
-
-}
-
+  
+   
     return(
 
          <Container>
@@ -30,13 +52,13 @@ class MidiDeviceList extends React.Component
         <Col>
         <h6>MIDI-IN PORT</h6>
    
-
+        <CheckBoxArray checkBoxList={this.state.ll}/>
 
         </Col>
         <Col>
         
         <h6>MIDI-OUT PORT</h6>
-        {midiInDevCheckList}
+
         
         </Col>
       </Row>

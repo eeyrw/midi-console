@@ -56,9 +56,11 @@ class VelocityChart extends React.Component
   render()
   {
     return(
+        <div>
         <ReactEcharts
         option={this.getOption()}
-        style={{height: '600px', width: '100%'}}/>);
+        style={{height: '600px', width: '100%'}}/>
+        </div>);
   }
 }
 
