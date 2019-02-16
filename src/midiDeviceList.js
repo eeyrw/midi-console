@@ -1,61 +1,128 @@
 import React from "react";
-import { Form,Col,Row,Container,Navbar, Jumbotron, Button } from 'react-bootstrap';
 import WebMidi from 'webmidi';
 import webmidi from "webmidi";
 import PropTypes from 'prop-types';
-import { runInThisContext } from "vm";
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Checkbox from '@material-ui/core/Checkbox';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import _ from 'lodash';
 
+class CheckBoxArray extends React.Component
+{
 
-
-const CheckBoxArray=({checkBoxList})=>{
-   return(checkBoxList.map(item=>(
-    <Form.Check 
-    disabled={item.disabled}
-    checked={item.checked}
-        type='checkbox'
-        id={item.id}
+  handleChange = (name,id) => event => {
+    let onChange=this.props.onChange;
+    onChange(name,id,event.target.checked);
+  };
+   render(){
+     return(
+    <FormGroup> 
+    
+    {this.props.checkBoxList.map(item=>
+      <FormControlLabel
+        control={
+          <Checkbox
+            defaultChecked={false}
+            onChange={this.handleChange(item.name,item.id)}
+            value={item.name}
+            disabled={item.disabled}
+          />
+        }
         label={item.name}
-      />)))
+      />
+    )}
+  
+      </FormGroup>
+     );
+   }
 }
 CheckBoxArray.propTypes = {
-  checkBoxList: PropTypes.array
+  checkBoxList: PropTypes.array,
+  onChange: PropTypes.func
   };
-
-class MidiDeviceManagement extends React.Component
-{
-  constructor(props) {
-    super(props)
-    }
-    onConnected(e)
-    {
-      
-    }
-    componentDidMount()
-    {
-      webmidi.addListener("connected",this.onConnected(e));
-    }
-
-}
 
 class MidiDeviceList extends React.Component
 {
   constructor(props) {
     super(props)
-    this.state = {
-    ll: [{id:0,name:'dfgdgf',disabled:true,checked:true}]
-    }
-    }
+    this.deviceList=[];
+    this.selectedDeviceList={};
+    this.state={midiInPortList:[],
+                midiOutPortList:[]}
+    this.onSelectedDeviceListChange = this.onSelectedDeviceListChange.bind(this);
+    this.selectedMidiInDeviceList=[];
+    this.selectedMidiOutDeviceList=[];
+  }
+
+  onSelectedDeviceListChange(name,id,checked)
+  {
+    console.log('NAME:'+name+' ID:'+id+" Checked:"+checked);
+    this.selectedDeviceList[id]=checked;
+    this.selectedMidiInDeviceList=this.deviceList.filter(item=>item.port.type=='input' && this.selectedDeviceList[item.port.id]==true).map(item=>WebMidi.getInputById(item.port.id));
+    this.selectedMidiOutDeviceList=this.deviceList.filter(item=>item.port.type=='output' && this.selectedDeviceList[item.port.id]==true).map(item=>WebMidi.getOutputById(item.port.id));
+  }
+  updateMidiInOutPortList()
+  {
+      [{stateField:'midiInPortList',portType:'input'},
+      {stateField: 'midiOutPortList',portType:'output'},
+    ].map(updateItem=>{
+      let portList=this.deviceList.filter(item=>item.port.type==updateItem.portType).map(item=>{
+        return(
+            {"disabled":item.port.state!="connected",
+         "id":item.port.id,
+        "name":item.port.name});
+        });
+      this.setState({[updateItem.stateField]:portList});
+      });
+  }
+
+  onConnected(e)
+  {
+    let deviceId=e.port.id;
+    let deviceIndex=_.findIndex(this.deviceList,(o)=>o.port.id==deviceId)
+    if(deviceIndex>-1)
+      this.deviceList[deviceIndex]=e;
+    else
+      this.deviceList.push(e);
+    this.updateMidiInOutPortList()
+  }
+  onDisconnected(e)
+  {
+    let deviceId=e.port.id;
+    let deviceIndex=_.findIndex(this.deviceList,(o)=>o.port.id==deviceId)
+    if(deviceIndex>-1)
+      this.deviceList[deviceIndex]=e;
+    else
+      this.deviceList.push(e);
+    this.updateMidiInOutPortList()
+  }
   componentDidMount()
   {
-    this.setState({ll:new Array()});
-    this.timerID=setInterval(()=>{
-      this.state.ll.push({id:67,name:'dfdd',disabled:true,checked:true})
-    this.setState({ll:this.state.ll})
-    }
-    ,1000)
+    let mainThis=this;
+    
+    WebMidi.enable(function (err) {
+      if (err) {
+        console.log("WebMidi could not be enabled.", err);
+      }
+      webmidi.addListener("connected",(e)=>mainThis.onConnected(e));
+      webmidi.addListener("disconnected",(e)=>mainThis.onDisconnected(e));
+    });
   }
-  componentWillUnmount() {
-    clearInterval(this.timerID);
+
+  componentWillUnmount()
+  {
+    WebMidi.enable(function (err) {
+      if (err) {
+        console.log("WebMidi could not be enabled.", err);
+      }
+      webmidi.removeListener("connected");
+      webmidi.removeListener("disconnected");
+    });    
   }
   render()
   {
@@ -63,61 +130,57 @@ class MidiDeviceList extends React.Component
    
     return(
 
-         <Container>
-      <Row>
+      <Grid container >
         
-        <Col>
-        <h6>MIDI-IN PORT</h6>
-   
-        <CheckBoxArray checkBoxList={this.state.ll}/>
+      <Grid item xs>
+        <FormControl component="fieldset">
+          <FormLabel component="legend">MIDI-IN PORT</FormLabel>
+        <CheckBoxArray checkBoxList={this.state.midiInPortList} onChange={this.onSelectedDeviceListChange}/>
+        </FormControl>
+        </Grid>
 
-        </Col>
-        <Col>
-        
-        <h6>MIDI-OUT PORT</h6>
+        <Grid item xs>
+        <FormControl component="fieldset">
+          <FormLabel component="legend">MIDI-OUT PORT</FormLabel>
+        <CheckBoxArray checkBoxList={this.state.midiOutPortList} onChange={this.onSelectedDeviceListChange}/>
+        </FormControl>
+        </Grid>
 
-        
-        </Col>
-      </Row>
-
-      <Row>
-
-      </Row>
-    </Container>);
+      </Grid>);
   }
 }
 
-WebMidi.enable(function (err) {
+// WebMidi.enable(function (err) {
 
-  if (err) {
-    console.log("WebMidi could not be enabled.", err);
-  }
+//   if (err) {
+//     console.log("WebMidi could not be enabled.", err);
+//   }
 
-  webmidi.addListener("connected",(e)=>console.log(e));
+//   webmidi.addListener("connected",(e)=>console.log(e));
 
-  // Viewing available inputs and outputs
-  console.log(WebMidi.inputs);
-  console.log(WebMidi.outputs);
+//   // Viewing available inputs and outputs
+//   console.log(WebMidi.inputs);
+//   console.log(WebMidi.outputs);
 
-  // Display the current time
-  console.log(WebMidi.time);
-  webmidi.MIDI_CHANNEL_MESSAGES
-  // Retrieving an output port/device using its id, name or index
-  var output = WebMidi.getOutputById("123456789");
-  output = WebMidi.getOutputByName("Axiom Pro 25 Ext Out");
-  output = WebMidi.outputs[0];
+//   // Display the current time
+//   console.log(WebMidi.time);
+//   webmidi.MIDI_CHANNEL_MESSAGES
+//   // Retrieving an output port/device using its id, name or index
+//   var output = WebMidi.getOutputById("123456789");
+//   output = WebMidi.getOutputByName("Axiom Pro 25 Ext Out");
+//   output = WebMidi.outputs[0];
 
-  // Retrieve an input by name, id or index
-  var input = WebMidi.getInputByName("nanoKEY2 KEYBOARD");
-  input = WebMidi.getInputById("1809568182");
-  input = WebMidi.inputs[0];
+//   // Retrieve an input by name, id or index
+//   var input = WebMidi.getInputByName("nanoKEY2 KEYBOARD");
+//   input = WebMidi.getInputById("1809568182");
+//   input = WebMidi.inputs[0];
 
-  // Listen for a 'note on' message on all channels
-  input.addListener('noteon', "all",
-    function (e) {
-      console.log("Received 'noteon' message (" + e.note.name + e.note.octave + ").");
-    }
-  );
+//   // Listen for a 'note on' message on all channels
+//   input.addListener('noteon', "all",
+//     function (e) {
+//       console.log("Received 'noteon' message (" + e.note.name + e.note.octave + ").");
+//     }
+//   );
 
-});
+// });
 export {MidiDeviceList as default}
