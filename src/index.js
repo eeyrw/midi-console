@@ -9,9 +9,26 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Album from './Album'
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+
+const styles = {
+  root: {
+    flexGrow: 1,
+  },
+  grow: {
+    flexGrow: 1,
+  },
+  menuButton: {
+    marginLeft: -12,
+    marginRight: 20,
+  },
+};
 
 class MainApp extends React.Component
 {
+
 
   constructor(props) {
     super(props)
@@ -20,19 +37,23 @@ class MainApp extends React.Component
  
   render()
   {
+    const {classes}=styles;
  
     return(
-      <div>
-<CssBaseline />
+<React.Fragment>
+      <CssBaseline />
 <AppBar position="sticky">
       <Toolbar>
         <Typography variant="h6" color="inherit">
         MIDI-CONSOLE
         </Typography>
+        <IconButton aria-haspopup="true" onClick={this.handleMobileMenuOpen} color="inherit">
+                <CloseIcon />
+              </IconButton>
       </Toolbar>
     </AppBar>
 
-    <Grid container spacing={24}>
+    <Grid container>
         <Grid item xs={4}>
         <MidiDeviceList />
         </Grid>
@@ -40,7 +61,7 @@ class MainApp extends React.Component
         <VelocityChart/>
         </Grid>
 
-    </Grid></div>);
+    </Grid> </React.Fragment>);
   }
 }
 

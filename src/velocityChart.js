@@ -1,16 +1,54 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { hot } from 'react-hot-loader'
-import ReactEcharts from 'echarts-for-react';  // or var ReactEcharts = require('echarts-for-react');
-import { Col,Row,Container,Navbar, Jumbotron, Button } from 'react-bootstrap';
-import MidiDeviceList from './midiDeviceList';
+import React from 'react';
+import cloneDeep from 'lodash';
+import ReactEcharts from 'echarts-for-react';
+
+class VelocityChart extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = this.getInitialState();
+      }
+      timeTicket = null;
+      count = 51;
+      getInitialState = () => ({option: this.getOption()});
+    
+      fetchNewDate = () => {
+        let axisData = (new Date()).toLocaleTimeString().replace(/^\D*/,'');
+        const option = _.cloneDeep(this.state.option); // immutable
 
 
-class VelocityChart extends React.Component
-{
- getOption()
- {
-    return({
+
+        if (option.series[0].data.length < 40) {
+            option.series[0].data.push({ value: Math.round(Math.random() * 128), itemStyle: { normal: { color: 'red' } } });
+            option.xAxis.data.push(axisData);
+        } else {
+            option.series[0].data.shift();
+            option.series[0].data.push({ value: Math.round(Math.random() * 128), itemStyle: { normal: { color: 'red' } } });
+
+            option.xAxis.data.shift();
+            option.xAxis.data.push(axisData);
+        }
+
+
+    
+        this.setState({
+          option,
+        });
+      };
+    
+      componentDidMount() {
+        if (this.timeTicket) {
+          clearInterval(this.timeTicket);
+        }
+        this.timeTicket = setInterval(this.fetchNewDate, 1000);
+      };
+    
+      componentWillUnmount() {
+        if (this.timeTicket) {
+          clearInterval(this.timeTicket);
+        }
+      };
+    
+      getOption = () => ({
         title: {
             text: 'NoteOn velocity',
         },
@@ -37,6 +75,14 @@ class VelocityChart extends React.Component
             min: 0,
             boundaryGap: true
         },
+        visualMap: {
+            show: true,
+            min: 0,
+            max: 128,
+            color: ['#BE002F', '#F20C00', '#F00056', '#FF2D51', '#FF2121', '#FF4C00', '#FF7500',
+              '#FF8936', '#FFA400', '#F0C239', '#FFF143', '#FAFF72', '#C9DD22', '#AFDD22',
+              '#9ED900', '#00E500', '#0EB83A', '#0AA344', '#0C8918', '#057748', '#177CB0']
+          },
         series: [{
             name: 'Velocity(0~127)',
             type: 'bar',
@@ -51,17 +97,20 @@ class VelocityChart extends React.Component
             //     }
             // }
         }]
-    });
- }
-  render()
-  {
-    return(
-        <div>
-        <ReactEcharts
-        option={this.getOption()}
-        style={{height: '600px', width: '100%'}}/>
-        </div>);
+      });
+
+  render() {
+    return (
+      <div className='examples'>
+        <div className='parent'>
+          <ReactEcharts ref='echarts_react'
+            option={this.state.option}
+            style={{height: 400}} />
+        </div>
+      </div>
+    );
   }
 }
+
 
 export {VelocityChart as default}
