@@ -8,14 +8,11 @@ import PropTypes from "prop-types";
 class VelocityChart extends React.Component {
   constructor(props) {
     super(props);
-    this.state = this.getInitialState();
+    this.state = { option: this.getOption() };
     this.onNoteOn = this.onNoteOn.bind(this);
   }
-  timeTicket = null;
-  count = 51;
-  getInitialState = () => ({ option: this.getOption() });
 
-  addDataPoint = (xValue,yValue) => {
+  addDataPoint = (xValue, yValue) => {
     let axisData = xValue;
     const option = _.cloneDeep(this.state.option); // immutable
 
@@ -42,9 +39,9 @@ class VelocityChart extends React.Component {
   };
 
   onNoteOn(e) {
-    vel=e.rawVelocity;
-    pitch=e.note.number;
-    this.addDataPoint(new Date().toLocaleTimeString().replace(/^\D*/, ""),vel);
+    vel = e.rawVelocity;
+    pitch = e.note.number;
+    this.addDataPoint(new Date().toLocaleTimeString().replace(/^\D*/, ""), vel);
   }
   componentDidMount() {
     this.props.inputPorts.map(port =>
