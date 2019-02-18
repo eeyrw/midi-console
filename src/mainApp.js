@@ -78,15 +78,15 @@ class MainApp extends React.Component {
           </Toolbar>
         </AppBar>
         <Grid container className={classes.root}>
-          <Grid item xs={4}>
+          <Grid item xs={12}>
             <Paper className={classes.paper}>
               <MidiDeviceList
-                onInPortChange={this.onSelectedMidiInPortChange}
-                onOutPortChange={this.onSelectedMidiOutPortChange}
+                onSelectedMidiInPortChange={this.onSelectedMidiInPortChange}
+                onSelectedMidiOutPortChange={this.onSelectedMidiOutPortChange}
               />
             </Paper>
           </Grid>
-          <Grid item xs={8}>
+          <Grid item xs={12}>
             <Paper className={classes.paper}>
               <VelocityChart inputPorts={this.state.midiInPortList} />
             </Paper>

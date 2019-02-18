@@ -12,7 +12,7 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import _ from "lodash";
 
-class CheckBoxArray extends React.Component {
+class CheckBoxGroup extends React.Component {
   handleChange = (name, id) => event => {
     let onChange = this.props.onChange;
     onChange(name, id, event.target.checked);
@@ -20,7 +20,7 @@ class CheckBoxArray extends React.Component {
   render() {
     return (
       <FormGroup>
-        {this.props.checkBoxList.map(item => (
+        {this.props.checkBoxPropsList.map(item => (
           <FormControlLabel
             control={
               <Checkbox
@@ -37,8 +37,8 @@ class CheckBoxArray extends React.Component {
     );
   }
 }
-CheckBoxArray.propTypes = {
-  checkBoxList: PropTypes.array,
+CheckBoxGroup.propTypes = {
+  checkBoxPropsList: PropTypes.array,
   onChange: PropTypes.func
 };
 
@@ -47,7 +47,10 @@ class MidiDeviceList extends React.Component {
     super(props);
     this.deviceList = [];
     this.selectedDeviceFlagList = {};
-    this.state = { midiInPortList: [], midiOutPortList: [] };
+    this.state = {
+      checkBoxGroupPropsListForMidiIn: [],
+      checkBoxGroupPropsListForMidiOut: []
+    };
     this.onSelectedDeviceListChange = this.onSelectedDeviceListChange.bind(
       this
     );
@@ -75,14 +78,14 @@ class MidiDeviceList extends React.Component {
 
     changedDeviceType = _.find(this.deviceList, o => o.port.id == id).port.type;
     if (changedDeviceType == "input")
-      this.props.onInPortChange(this.selectedMidiInDeviceList);
+      this.props.onSelectedMidiInPortChange(this.selectedMidiInDeviceList);
     else if (changedDeviceType == "output")
-      this.props.onOutPortChange(this.selectedMidiOutDeviceList);
+      this.props.onSelectedMidiOutPortChange(this.selectedMidiOutDeviceList);
   }
   updateMidiInOutPortList() {
     [
-      { stateField: "midiInPortList", portType: "input" },
-      { stateField: "midiOutPortList", portType: "output" }
+      { stateField: "checkBoxGroupPropsListForMidiIn", portType: "input" },
+      { stateField: "checkBoxGroupPropsListForMidiOut", portType: "output" }
     ].map(updateItem => {
       let portList = this.deviceList
         .filter(item => item.port.type == updateItem.portType)
@@ -138,9 +141,9 @@ class MidiDeviceList extends React.Component {
         <Grid item xs>
           <FormControl component="fieldset">
             <FormLabel component="legend">MIDI-IN PORT</FormLabel>
-            {this.state.midiInPortList.length != 0 ? (
-              <CheckBoxArray
-                checkBoxList={this.state.midiInPortList}
+            {this.state.checkBoxGroupPropsListForMidiIn.length != 0 ? (
+              <CheckBoxGroup
+                checkBoxPropsList={this.state.checkBoxGroupPropsListForMidiIn}
                 onChange={this.onSelectedDeviceListChange}
               />
             ) : (
@@ -152,9 +155,9 @@ class MidiDeviceList extends React.Component {
         <Grid item xs>
           <FormControl component="fieldset">
             <FormLabel component="legend">MIDI-OUT PORT</FormLabel>
-            {this.state.midiOutPortList.length != 0 ? (
-              <CheckBoxArray
-                checkBoxList={this.state.midiOutPortList}
+            {this.state.checkBoxGroupPropsListForMidiOut.length != 0 ? (
+              <CheckBoxGroup
+                checkBoxPropsList={this.state.checkBoxGroupPropsListForMidiOut}
                 onChange={this.onSelectedDeviceListChange}
               />
             ) : (
@@ -168,8 +171,8 @@ class MidiDeviceList extends React.Component {
 }
 
 MidiDeviceList.propTypes = {
-  onInPortChange: PropTypes.func,
-  onOutPortChange: PropTypes.func
+  onSelectedMidiInPortChange: PropTypes.func,
+  onSelectedMidiOutPortChange: PropTypes.func
 };
 
 export { MidiDeviceList as default };
