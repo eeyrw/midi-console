@@ -1,12 +1,12 @@
 import React from 'react';
-import cloneDeep from 'lodash';
+import _ from 'lodash';
 import ReactEcharts from 'echarts-for-react';
 
 class VelocityChart extends React.Component {
     constructor(props) {
-        super(props);
-        this.state = this.getInitialState();
-      }
+                         super(props);
+                         this.state = this.getInitialState();
+                       }
       timeTicket = null;
       count = 51;
       getInitialState = () => ({option: this.getOption()});
@@ -36,10 +36,10 @@ class VelocityChart extends React.Component {
       };
     
       componentDidMount() {
-        if (this.timeTicket) {
-          clearInterval(this.timeTicket);
-        }
-        this.timeTicket = setInterval(this.fetchNewDate, 1000);
+        // if (this.timeTicket) {
+        //   clearInterval(this.timeTicket);
+        // }
+        // this.timeTicket = setInterval(this.fetchNewDate, 1000);
       };
     
       componentWillUnmount() {
