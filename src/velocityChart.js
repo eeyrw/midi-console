@@ -81,14 +81,6 @@ class VelocityChart extends React.Component {
         type: "bar",
         data: [],
         animation: false
-        // label:
-        // {
-        //     normal:
-        //     {
-        //         show:true,
-        //         position:'insideBottom'
-        //     }
-        // }
       }
     ]
   });
