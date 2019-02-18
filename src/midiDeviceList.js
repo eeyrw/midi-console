@@ -46,7 +46,7 @@ class MidiDeviceList extends React.Component {
   constructor(props) {
     super(props);
     this.deviceList = [];
-    this.selectedDeviceList = {};
+    this.selectedDeviceFlagList = {};
     this.state = { midiInPortList: [], midiOutPortList: [] };
     this.onSelectedDeviceListChange = this.onSelectedDeviceListChange.bind(
       this
@@ -57,21 +57,27 @@ class MidiDeviceList extends React.Component {
 
   onSelectedDeviceListChange(name, id, checked) {
     console.log("NAME:" + name + " ID:" + id + " Checked:" + checked);
-    this.selectedDeviceList[id] = checked;
+    this.selectedDeviceFlagList[id] = checked;
     this.selectedMidiInDeviceList = this.deviceList
       .filter(
         item =>
           item.port.type == "input" &&
-          this.selectedDeviceList[item.port.id] == true
+          this.selectedDeviceFlagList[item.port.id] == true
       )
       .map(item => WebMidi.getInputById(item.port.id));
     this.selectedMidiOutDeviceList = this.deviceList
       .filter(
         item =>
           item.port.type == "output" &&
-          this.selectedDeviceList[item.port.id] == true
+          this.selectedDeviceFlagList[item.port.id] == true
       )
       .map(item => WebMidi.getOutputById(item.port.id));
+
+    changedDeviceType = _.find(this.deviceList, o => o.port.id == id).port.type;
+    if (changedDeviceType == "input")
+      this.props.onInPortChange(this.selectedMidiInDeviceList);
+    else if (changedDeviceType == "output")
+      this.props.onOutPortChange(this.selectedMidiOutDeviceList);
   }
   updateMidiInOutPortList() {
     [
@@ -161,37 +167,9 @@ class MidiDeviceList extends React.Component {
   }
 }
 
-// WebMidi.enable(function (err) {
+MidiDeviceList.propTypes = {
+  onInPortChange: PropTypes.func,
+  onOutPortChange: PropTypes.func
+};
 
-//   if (err) {
-//     console.log("WebMidi could not be enabled.", err);
-//   }
-
-//   webmidi.addListener("connected",(e)=>console.log(e));
-
-//   // Viewing available inputs and outputs
-//   console.log(WebMidi.inputs);
-//   console.log(WebMidi.outputs);
-
-//   // Display the current time
-//   console.log(WebMidi.time);
-//   webmidi.MIDI_CHANNEL_MESSAGES
-//   // Retrieving an output port/device using its id, name or index
-//   var output = WebMidi.getOutputById("123456789");
-//   output = WebMidi.getOutputByName("Axiom Pro 25 Ext Out");
-//   output = WebMidi.outputs[0];
-
-//   // Retrieve an input by name, id or index
-//   var input = WebMidi.getInputByName("nanoKEY2 KEYBOARD");
-//   input = WebMidi.getInputById("1809568182");
-//   input = WebMidi.inputs[0];
-
-//   // Listen for a 'note on' message on all channels
-//   input.addListener('noteon', "all",
-//     function (e) {
-//       console.log("Received 'noteon' message (" + e.note.name + e.note.octave + ").");
-//     }
-//   );
-
-// });
 export { MidiDeviceList as default };

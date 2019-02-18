@@ -38,9 +38,24 @@ const styles = theme => ({
 class MainApp extends React.Component {
   constructor(props) {
     super(props);
+    this.onSelectedMidiInPortChange = this.onSelectedMidiInPortChange.bind(
+      this
+    );
+    this.onSelectedMidiOutPortChange = this.onSelectedMidiOutPortChange.bind(
+      this
+    );
+    this.state = { midiInPortList: [], midiOutPortList: [] };
   }
 
+  onSelectedMidiInPortChange(e) {
+    this.setState({ midiInPortList: e });
+  }
+
+  onSelectedMidiOutPortChange(e) {
+    this.setState({ midiOutPortList: e });
+  }
   render() {
+      console.log(this.state)
     const { classes } = this.props;
 
     return (
@@ -65,12 +80,15 @@ class MainApp extends React.Component {
         <Grid container className={classes.root}>
           <Grid item xs={4}>
             <Paper className={classes.paper}>
-              <MidiDeviceList />
+              <MidiDeviceList
+                onInPortChange={this.onSelectedMidiInPortChange}
+                onOutPortChange={this.onSelectedMidiOutPortChange}
+              />
             </Paper>
           </Grid>
           <Grid item xs={8}>
             <Paper className={classes.paper}>
-              <VelocityChart />
+              <VelocityChart inputPorts={this.state.midiInPortList} />
             </Paper>
           </Grid>
         </Grid>
