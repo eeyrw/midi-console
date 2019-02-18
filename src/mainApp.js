@@ -55,7 +55,6 @@ class MainApp extends React.Component {
     this.setState({ midiOutPortList: e });
   }
   render() {
-    console.log(this.state);
     const { classes } = this.props;
 
     return (

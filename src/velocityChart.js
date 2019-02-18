@@ -12,7 +12,7 @@ class VelocityChart extends React.Component {
     this.onNoteOn = this.onNoteOn.bind(this);
   }
 
-  addDataPoint = (xValue, yValue) => {
+  addDataPoint = (xValue, yValue, barColor) => {
     let axisData = xValue;
     const option = _.cloneDeep(this.state.option); // immutable
 
@@ -22,7 +22,7 @@ class VelocityChart extends React.Component {
     }
     option.series[0].data.push({
       value: yValue,
-      itemStyle: { normal: { color: "red" } }
+      itemStyle: { normal: { color: barColor } }
     });
     option.xAxis.data.push(axisData);
 
@@ -32,9 +32,14 @@ class VelocityChart extends React.Component {
   };
 
   onNoteOn(e) {
-    vel = e.rawVelocity;
-    pitch = e.note.number;
-    this.addDataPoint(new Date().toLocaleTimeString().replace(/^\D*/, ""), vel);
+    let vel = e.rawVelocity;
+    let pitch = e.note.number;
+    let time = (e.timestamp / 1000).toFixed(5);
+    var hsl_h = (pitch * 360) / 127;
+
+    hsl_h = ((pitch - 0x24) * 360) / (0x60 - 0x24);
+
+    this.addDataPoint(time, vel, "hsl(" + hsl_h + ",100%,50%)");
   }
   componentDidMount() {
     this.props.inputPorts.map(port =>
@@ -46,6 +51,18 @@ class VelocityChart extends React.Component {
     this.props.inputPorts.map(port =>
       port.removeListener("noteon", "all", this.onNoteOn)
     );
+  }
+
+  componentDidUpdate(prevProps) {
+    // Typical usage (don't forget to compare props):
+    if (this.props.inputPorts !== prevProps.inputPorts) {
+      prevProps.inputPorts.map(port =>
+        port.removeListener("noteon", "all", this.onNoteOn)
+      );
+      this.props.inputPorts.map(port =>
+        port.addListener("noteon", "all", this.onNoteOn)
+      );
+    }
   }
 
   getOption = () => ({

@@ -54,6 +54,8 @@ class MidiDeviceList extends React.Component {
     this.onSelectedDeviceListChange = this.onSelectedDeviceListChange.bind(
       this
     );
+    this.onConnected = this.onConnected.bind(this);
+    this.onDisconnected = this.onDisconnected.bind(this);
     this.selectedMidiInDeviceList = [];
     this.selectedMidiOutDeviceList = [];
   }
@@ -76,7 +78,8 @@ class MidiDeviceList extends React.Component {
       )
       .map(item => WebMidi.getOutputById(item.port.id));
 
-    changedDeviceType = _.find(this.deviceList, o => o.port.id == id).port.type;
+    let changedDeviceType = _.find(this.deviceList, o => o.port.id == id).port
+      .type;
     if (changedDeviceType == "input")
       this.props.onSelectedMidiInPortChange(this.selectedMidiInDeviceList);
     else if (changedDeviceType == "output")
@@ -116,13 +119,12 @@ class MidiDeviceList extends React.Component {
   }
   componentDidMount() {
     let mainThis = this;
-
     WebMidi.enable(function(err) {
       if (err) {
         console.log("WebMidi could not be enabled.", err);
       }
-      webmidi.addListener("connected", e => mainThis.onConnected(e));
-      webmidi.addListener("disconnected", e => mainThis.onDisconnected(e));
+      webmidi.addListener("connected", mainThis.onConnected);
+      webmidi.addListener("disconnected", mainThis.onDisconnected);
     });
   }
 
