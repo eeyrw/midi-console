@@ -78,7 +78,7 @@ class MainApp extends React.Component {
           </Toolbar>
         </AppBar>
         <Grid container className={classes.root}>
-          <Grid item xs={12}>
+          <Grid item xs={4}>
             <Paper className={classes.paper}>
               <MidiDeviceList
                 onSelectedMidiInPortChange={this.onSelectedMidiInPortChange}
@@ -86,7 +86,7 @@ class MainApp extends React.Component {
               />
             </Paper>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={8}>
             <Paper className={classes.paper}>
               <VelocityChart inputPorts={this.state.midiInPortList} />
             </Paper>
