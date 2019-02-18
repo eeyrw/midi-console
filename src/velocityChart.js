@@ -16,22 +16,15 @@ class VelocityChart extends React.Component {
     let axisData = xValue;
     const option = _.cloneDeep(this.state.option); // immutable
 
-    if (option.series[0].data.length < 40) {
-      option.series[0].data.push({
-        value: yValue,
-        itemStyle: { normal: { color: "red" } }
-      });
-      option.xAxis.data.push(axisData);
-    } else {
-      option.series[0].data.shift();
-      option.series[0].data.push({
-        value: yValue,
-        itemStyle: { normal: { color: "red" } }
-      });
-
+    if (!(option.series[0].data.length < 40)) {
       option.xAxis.data.shift();
-      option.xAxis.data.push(axisData);
+      option.series[0].data.shift();
     }
+    option.series[0].data.push({
+      value: yValue,
+      itemStyle: { normal: { color: "red" } }
+    });
+    option.xAxis.data.push(axisData);
 
     this.setState({
       option
