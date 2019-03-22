@@ -35,9 +35,7 @@ class VelocityChart extends React.Component {
     let vel = e.rawVelocity;
     let pitch = e.note.number;
     let time = (e.timestamp / 1000).toFixed(5);
-    var hsl_h = (pitch * 360) / 127;
-
-    hsl_h = ((pitch - 0x24) * 360) / (0x60 - 0x24);
+    let hsl_h = ((pitch - 0x24) * 360) / (0x60 - 0x24);
 
     this.addDataPoint(time, vel, "hsl(" + hsl_h + ",100%,50%)");
   }
